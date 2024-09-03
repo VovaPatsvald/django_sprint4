@@ -104,3 +104,6 @@ LOGIN_URL = 'login'
 MAX_FIELD_LENGTH = 256
 REPRESENTATION_LENGHT = 20
 POSTS_BY_PAGE = 5
+
+
+CSRF_FAILURE = 'pages.views.csrf_failure'

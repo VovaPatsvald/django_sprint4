@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from django.utils.timezone import now
 from django.conf import settings
 from django.db import models
@@ -82,7 +83,9 @@ class Post(BaseBlogModel):
     pub_date = models.DateTimeField(
         'Дата и время публикации',
         help_text='Если установить дату и время в будущем — можно '
-        'делать отложенные публикации.')
+        'делать отложенные публикации.'
+    )
+    image = models.ImageField(verbose_name='Картинка у публикации', blank=True)
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -110,7 +113,10 @@ class Post(BaseBlogModel):
 
     def __str__(self) -> str:
         return self.title[:settings.REPRESENTATION_LENGHT]
-    
+
+    def get_absolute_url(self):
+        return reverse('blog:post_detail', args=(self.pk,))
+
 
 class Comment(BaseBlogModel):
     author = models.ForeignKey(

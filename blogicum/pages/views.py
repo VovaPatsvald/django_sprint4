@@ -1,9 +1,13 @@
 from django.shortcuts import render
 
 
-def about(request):
-    return render(request, 'pages/about.html')
+def page_not_found(request, exception):
+    return render(request, 'pages/404.html', status=404)
 
 
-def rules(request):
-    return render(request, 'pages/rules.html')
+def server_error(request):
+    return render(request, 'pages/500.html', status=500)
+
+
+def csrf_failure(request, reason=''):
+    return render(request, 'pages/403.html', status=403)
