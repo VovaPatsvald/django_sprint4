@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.conf import settings
 
-from core.constants import POSTS_BY_PAGE
+"""from core.constants import POSTS_BY_PAGE"""
 from django.views.generic import UpdateView, DeleteView
 
 from .forms import PostForm
