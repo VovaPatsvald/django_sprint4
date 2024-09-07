@@ -1,10 +1,3 @@
-from datetime import timezone
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
-from django.db.models.base import Model as Model
-from django.db.models import Count
-from django.db.models.query import QuerySet
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.timezone import now
@@ -13,6 +6,13 @@ from django.views.generic import UpdateView, DeleteView, DetailView, CreateView
 
 from .forms import PostForm, UserForm, CommentForm
 from .models import Post, Category, User
+from datetime import timezone
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
+"""from django.db.models.base import Model as Model"""
+from django.db.models import Count
+"""from django.db.models.query import QuerySet"""
 
 
 def index(request):
@@ -58,6 +58,7 @@ def delete_post(request, post_id):
     else:
         form = PostForm(instance=request.user)
         return render(request, 'blog/create.html', {'form': form})
+
 
 @login_required
 def edit_profile(request):
@@ -216,4 +217,5 @@ class ProfileUpdateView(UpdateView):
         return self.request.user
 
     def get_success_url(self):
-        return reverse_lazy('blog:profile', kwargs={'username': self.request.user.username})
+        return reverse_lazy('blog:profile',
+                            kwargs={'username': self.request.user.username})
