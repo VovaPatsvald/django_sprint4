@@ -5,8 +5,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.urls import path, include, reverse_lazy
 from django.views.generic import CreateView
 
-handler404 = 'pages.vieaw.page_not_found'
-handler500 = 'pages.views.server_error'
+"""handler404 = 'pages.view.page_not_found'
+handler500 = 'pages.views.server_error'"""
 
 
 urlpatterns = [
@@ -19,7 +19,7 @@ urlpatterns = [
         CreateView.as_view(
             template_name='registration/registration_form.html',
             form_class=UserCreationForm,
-            succes_url=reverse_lazy('blog:index',)
+            success_url=reverse_lazy('blog:index',)
         ),
         name='registration',
     ),

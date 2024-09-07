@@ -103,7 +103,11 @@ LOGIN_URL = 'login'
 
 MAX_FIELD_LENGTH = 256
 REPRESENTATION_LENGHT = 20
-POSTS_BY_PAGE = 5
+POSTS_BY_PAGE = 10
 
 
 CSRF_FAILURE = 'pages.views.csrf_failure'
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
+

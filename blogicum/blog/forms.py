@@ -1,7 +1,13 @@
 from datetime import datetime
 from django.forms import DateTimeField, DateTimeInput, ModelForm
 
-from .models import Post
+from .models import Post, User, Comment
+
+
+class UserForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ('email', 'first_name', 'last_name', 'last_login', 'username')
 
 
 class PostForm(ModelForm):
@@ -16,3 +22,11 @@ class PostForm(ModelForm):
     class Meta:
         model = Post
         exclude = ('author',)
+
+
+class CommentForm(ModelForm):
+
+    class Meta:
+        model = Comment
+        fields = ('text',)
+

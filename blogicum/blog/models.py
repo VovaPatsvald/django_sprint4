@@ -3,8 +3,21 @@ from django.urls import reverse
 from django.utils.timezone import now
 from django.conf import settings
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 User = get_user_model()
+
+
+class MyUser(AbstractUser):
+    bio = models.TextField('Биография', blank=True)
+
+    def get_full_name(self):
+        full_name = f'{self.first_name} {self.last_name}'.strip()
+        return full_name if full_name else self.username
+
+    def __str__(self):
+        return self.get_full_name()
 
 
 class BaseBlogModel(models.Model):

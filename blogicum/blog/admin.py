@@ -1,6 +1,8 @@
 from django.contrib import admin
 
 from .models import Post, Location, Category
+
+
 from django.contrib.auth.admin import UserAdmin
 
 from .models import MyUser
