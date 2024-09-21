@@ -9,17 +9,6 @@ from django.db import models
 User = get_user_model()
 
 
-class MyUser(AbstractUser):
-    bio = models.TextField('Биография', blank=True)
-
-    def get_full_name(self):
-        full_name = f'{self.first_name} {self.last_name}'.strip()
-        return full_name if full_name else self.username
-
-    def __str__(self):
-        return self.get_full_name()
-
-
 class BaseBlogModel(models.Model):
     is_published = models.BooleanField(
         'Опубликовано',
@@ -128,7 +117,7 @@ class Post(BaseBlogModel):
         return self.title[:settings.REPRESENTATION_LENGHT]
 
     def get_absolute_url(self):
-        return reverse('blog:post_detail', args=(self.pk,))
+        return reverse("blog:post_detail", kwargs={"pk": self.pk})
 
 
 class Comment(BaseBlogModel):

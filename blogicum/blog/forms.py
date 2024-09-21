@@ -1,7 +1,6 @@
-from datetime import datetime
-from django.forms import DateTimeField, DateTimeInput, ModelForm
-
-from .models import Post, User, Comment
+from django.forms import DateTimeInput, ModelForm
+from django.contrib.auth.models import User
+from .models import Post, Comment
 
 
 class UserForm(ModelForm):
@@ -11,21 +10,22 @@ class UserForm(ModelForm):
 
 
 class PostForm(ModelForm):
-    pub_date = DateTimeField(
-        label='Дата публикации',
-        widget=DateTimeInput(attrs={'typet': 'datetime-local'}),
-        initial=format(datetime.now(), '%Y-%m-%dT%H:%M'),
-        input_formats=['%Y-%m-%dT%H:%M'],
-        localize=True
-    )
+    """Форма для добавления поста."""
 
     class Meta:
         model = Post
-        exclude = ('author',)
+        exclude = (
+            "author",
+            "is_published",
+        )
+        widgets = {
+            "pub_date": DateTimeInput(attrs={"type": "datetime-local"}),
+        }
 
 
 class CommentForm(ModelForm):
+    """Форма для добавления комментария к посту."""
 
     class Meta:
         model = Comment
-        fields = ('text',)
+        fields = ("text",)

@@ -1,38 +1,53 @@
 from django.urls import path
 
-from .views import (
-    DeletePostView, EditPostView, PostCreateViews, PostDetailView,
-    ProfileUpdateView, ProfileView, add_comment, index,
-    category_posts)
+from . import views
 
-app_name = 'blog'
+app_name: str = "blog"
 
-urlpatterns = [
-    path('', index, name='index'),
-    path('posts/<int:post_id>/', PostDetailView.as_view(), name='post_detail'),
-
+urlpatterns: list = [
+    path("", views.PostListView.as_view(), name="index"),
     path(
-        'posts/<int:post_id>/edit/',
-        EditPostView.as_view(),
-        name='edit_post',
+        "posts/<int:pk>/", views.PostDetailView.as_view(), name="post_detail"
     ),
-
-    path('posts/<int:post_id>/delete/',
-         DeletePostView.as_view(), name='delete_post'),
-
-    path('category/<slug:category_slug>/',
-         category_posts, name='category_posts'),
-
-    path('posts/create/', PostCreateViews.as_view(), name='create_post'),
-
-    path('profile/edit/', ProfileUpdateView.as_view(), name='edit_profile'),
-
-    path('profile/<str:username', ProfileView.as_view(), name='profile'),
-
-    path('posts/<int:post_id>/comment/', add_comment, name='add_comment'),
+    path(
+        "category/<slug:category_slug>/",
+        views.CategoryListView.as_view(),
+        name="category_posts",
+    ),
+    path(
+        "posts/create/", views.PostCreateEditView.as_view(), name="create_post"
+    ),
+    path(
+        "posts/<int:pk>/edit/",
+        views.PostCreateEditView.as_view(),
+        name="edit_post",
+    ),
+    path(
+        "profile/<username>/", views.UserProfileView.as_view(), name="profile"
+    ),
+    path(
+        "edit_profile",
+        views.UserEditProfileView.as_view(),
+        name="edit_profile",
+    ),
+    path(
+        "posts/<int:pk>/delete/",
+        views.PostDeleteView.as_view(),
+        name="delete_post",
+    ),
+    path(
+        "posts/<int:pk>/comment/",
+        views.CommentCreateView.as_view(),
+        name="add_comment",
+    ),
+    path(
+        "posts/<int:post_id>/edit_comment/<int:pk>/",
+        views.CommentUpdateView.as_view(),
+        name="edit_comment",
+    ),
+    path(
+        "posts/<int:post_id>/delete_comment/<int:pk>/",
+        views.CommentDeleteView.as_view(),
+        name="delete_comment",
+    ),
 ]
-"""    path('posts/<int:post_id>/edit_comment/<int:comment_id/', edit_comment,
-         name='edit_comment'),
-
-    path('posts/<int:post_id>/delete_comment/<int:comment_id>/',
-    delete_comment, name='delete_comment'),"""

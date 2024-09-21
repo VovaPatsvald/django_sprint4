@@ -1,17 +1,9 @@
 from django.contrib import admin
 
-from .models import Post, Location, Category
+from .models import Post, Location, Category, Comment
 
 
 from django.contrib.auth.admin import UserAdmin
-
-from .models import MyUser
-
-UserAdmin.fieldsets += (
-    ('Extra Fields', {'fields': ('bio',)}),
-)
-
-admin.site.register(MyUser, UserAdmin)
 
 
 @admin.register(Category)
@@ -41,7 +33,7 @@ class PostAdmin(admin.ModelAdmin):
 
 
 @admin.register(Location)
-class LocationyAdmin(admin.ModelAdmin):
+class LocationAdmin(admin.ModelAdmin):
     search_fields = ('name', )
     list_display = (
         'id', 'name',
@@ -51,3 +43,12 @@ class LocationyAdmin(admin.ModelAdmin):
     list_editable = ['is_published']
     list_filter = ('created_at', )
     empty_value_display = '-пусто-'
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ("text", "created_at", "author")
+    list_filter = ("created_at", "author")
+    search_fields = ("text", "author__username")
+    date_hierarchy = "created_at"
+    empty_value_display = "-пусто-"

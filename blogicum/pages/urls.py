@@ -1,18 +1,10 @@
-"""from django.urls import path, include"""
 from django.urls import path
-from django.views.generic import TemplateView
 
+from . import views
 
-app_name = 'pages'
+app_name: str = "pages"
 
-
-urlpatterns = [
-    path(
-        'about/',
-        TemplateView.as_view(template_name='pages/about.html'),
-    ),
-    path(
-        'rules/',
-        TemplateView.as_view(template_name='pages/rules.html'),
-    ),
+urlpatterns: list = [
+    path("about/", views.AboutView.as_view(), name="about"),
+    path("rules/", views.RulesView.as_view(), name="rules"),
 ]
