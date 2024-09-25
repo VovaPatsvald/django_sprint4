@@ -1,31 +1,34 @@
-from django.forms import DateTimeInput, ModelForm
-from django.contrib.auth.models import User
-from .models import Post, Comment
+from django import forms
+
+from .models import Comment, Post, User
 
 
-class UserForm(ModelForm):
-    class Meta:
-        model = User
-        fields = ('email', 'first_name', 'last_name', 'last_login', 'username')
-
-
-class PostForm(ModelForm):
-    """Форма для добавления поста."""
+class PostForm(forms.ModelForm):
+    """Форма создания публикации"""
 
     class Meta:
         model = Post
-        exclude = (
-            "author",
-            "is_published",
-        )
+        exclude = ('author', )
         widgets = {
-            "pub_date": DateTimeInput(attrs={"type": "datetime-local"}),
+            'pub_date': forms.DateTimeInput(
+                format='%Y-%m-%d %H:%M:%S',
+                attrs={'type': 'datetime-local'}
+            )
         }
 
 
-class CommentForm(ModelForm):
-    """Форма для добавления комментария к посту."""
+class EditProfileForm(forms.ModelForm):
+    """Форма редактирования профиля"""
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'username', 'email')
+
+
+class CommentForm(forms.ModelForm):
+    """Форма для комментария"""
 
     class Meta:
         model = Comment
-        fields = ("text",)
+        fields = ('text',)
+        widgets = {'text': forms.Textarea(attrs={'cols': '10', 'rows': '5'})}

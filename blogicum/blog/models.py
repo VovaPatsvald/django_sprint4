@@ -1,144 +1,137 @@
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.urls import reverse
-from django.utils.timezone import now
-from django.conf import settings
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.db import models
+from django.utils import timezone as dt
 
 User = get_user_model()
 
+TITLE_LETTER_LIMIT = 30
 
-class BaseBlogModel(models.Model):
+
+class PublishModel(models.Model):
+    """Абстрактная модель с 'is_published' и 'created_at'"""
+
     is_published = models.BooleanField(
-        'Опубликовано',
         default=True,
+        verbose_name='Опубликовано',
         help_text='Снимите галочку, чтобы скрыть публикацию.'
     )
-    created_at = models.DateTimeField('Добавлено', auto_now_add=True,)
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Добавлено'
+    )
 
     class Meta:
         abstract = True
-        ordering = ('created_at',)
 
 
-class Category(BaseBlogModel):
-    title = models.CharField('Заголовок', max_length=settings.MAX_FIELD_LENGTH)
+class Category(PublishModel):
+    """Модель с категориями"""
+
+    title = models.CharField(max_length=256, verbose_name='Заголовок')
     description = models.TextField('Описание')
     slug = models.SlugField(
-        'Идентификатор',
+        unique=True,
+        verbose_name='Идентификатор',
         help_text=(
-            'Идентификатор страницы для URL; разрешены символы '
-            'латиницы, цифры, дефис и подчёркивание.'
-        ),
-        unique=True
+            'Идентификатор страницы для URL;'
+            ' разрешены символы латиницы, цифры, дефис и подчёркивание.'
+        )
     )
 
-    class Meta(BaseBlogModel.Meta):
-
+    class Meta:
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
-    def __str__(self) -> str:
-        return self.title[:settings.REPRESENTATION_LENGHT]
+    def __str__(self):
+        return self.title[:TITLE_LETTER_LIMIT]
 
 
-class Location(BaseBlogModel):
-    name = models.CharField('Название места',
-                            max_length=settings.MAX_FIELD_LENGTH)
+class Location(PublishModel):
+    """Модель с местоположениями"""
 
-    class Meta(BaseBlogModel.Meta):
+    name = models.CharField(max_length=256, verbose_name='Название места')
+
+    class Meta:
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
 
-    def __str__(self) -> str:
-        return self.name[:settings.REPRESENTATION_LENGHT]
+    def __str__(self):
+        return self.name[:TITLE_LETTER_LIMIT]
 
 
-class PostQuerySet(models.QuerySet):
-    def with_related_data(self):
-        return self.select_related('author', 'category', 'location')
+class Post(PublishModel):
+    """Модель с постами"""
 
-    def published(self):
-        return self.filter(is_published=True)
-
-    def with_pub_date__lt(self):
-        return self.filter(pub_date__lt=now())
-
-    def category__is(self):
-        return self.filter(category__is_published=True)
-
-
-class PublishedPostManager(models.Manager):
-    def get_queryset(self):
-        return (PostQuerySet(self.model)
-                .with_related_data()
-                .published()
-                .with_pub_date__lt()
-                .category__is()
-                )
-
-
-class Post(BaseBlogModel):
-    title = models.CharField('Заголовок', max_length=settings.MAX_FIELD_LENGTH)
+    title = models.CharField(max_length=256, verbose_name='Заголовок')
     text = models.TextField('Текст')
     pub_date = models.DateTimeField(
-        'Дата и время публикации',
-        help_text='Если установить дату и время в будущем — можно '
-        'делать отложенные публикации.'
+        verbose_name='Дата и время публикации',
+        help_text=(
+            'Если установить дату и время'
+            ' в будущем — можно делать отложенные публикации.'
+        ),
+        default=dt.localtime,
     )
-    image = models.ImageField(verbose_name='Картинка у публикации', blank=True)
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор публикации',
     )
-    category = models.ForeignKey(
-        Category, null=True,
-        on_delete=models.SET_NULL,
-        verbose_name='Категория'
-    )
     location = models.ForeignKey(
         Location,
-        blank=True, null=True,
         on_delete=models.SET_NULL,
-        verbose_name='Местоположение'
+        null=True,
+        blank=True,
+        verbose_name='Местоположение',
     )
-    objects = PostQuerySet.as_manager()
-    published = PublishedPostManager()
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='Категория',
+    )
+    image = models.ImageField('Фото', upload_to='posts_images', blank=True)
 
-    class Meta(BaseBlogModel.Meta):
-        default_related_name = 'posts'
+    class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
-        ordering = ('-pub_date', )
+        default_related_name = 'posts'
+        ordering = ('-pub_date',)
 
-    def __str__(self) -> str:
-        return self.title[:settings.REPRESENTATION_LENGHT]
+    def __str__(self):
+        return self.title[:TITLE_LETTER_LIMIT]
 
     def get_absolute_url(self):
-        return reverse("blog:post_detail", kwargs={"pk": self.pk})
+        return reverse('blog:post_detail', kwargs={'post_id': self.id})
 
 
-class Comment(BaseBlogModel):
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name='Автор комметария',
-        related_name='comments',
+class Comment(models.Model):
+    """Модель комментария"""
+
+    text = models.TextField(
+        'Текст комментария',
     )
     post = models.ForeignKey(
         Post,
+        verbose_name='Публикация',
         on_delete=models.CASCADE,
-        verbose_name='Комментируемый пост',
-        related_name='comments',
     )
-    text = models.TextField(verbose_name='Текст комментария')
+    created_at = models.DateTimeField(
+        'Дата и время создания',
+        auto_now_add=True
+    )
+    author = models.ForeignKey(
+        User,
+        verbose_name='Автор',
+        on_delete=models.CASCADE
+    )
 
     class Meta:
-        verbose_name = 'комментарий'
-        verbose_name_plural = 'Комментарии'
         ordering = ('created_at',)
+        default_related_name = 'comments'
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
 
     def __str__(self):
-        return self.text[:settings.REPRESENTATION_LENGHT]
+        return self.text[:TITLE_LETTER_LIMIT]
