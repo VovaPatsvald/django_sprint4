@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.db.models.query import QuerySet
 from django.db.models.aggregates import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone as dt
@@ -23,7 +24,7 @@ def check_auth(request):
         category__is_published=True,
         pub_date__lte=dt.now(),
         is_published=True
-    ) | Q(author_id=request.user.id)
+    ) | Q(author=request.user.id)
 
 
 def post_select_realted():
@@ -146,7 +147,7 @@ def edit_profile(request):
 def edit_post(request, post_id):
     """Страница редактирования публикации"""
     post = get_object_or_404(Post, id=post_id)
-    if request.user.id != post.author_id:
+    if request.user != post.author:
         return redirect('blog:post_detail', post_id)
     form = PostForm(
         request.POST or None,
@@ -166,7 +167,7 @@ def edit_post(request, post_id):
 def delete_post(request, post_id):
     """Страница удаления публикации"""
     post = get_object_or_404(Post, id=post_id)
-    if request.user.id != post.author_id:
+    if request.user != post.author:
         return redirect('blog:post_detail', post_id)
     form = PostForm(instance=post)
     if request.method == 'POST':

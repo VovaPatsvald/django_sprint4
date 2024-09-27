@@ -2,10 +2,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone as dt
-
+from blog.constants import TITLE_LETTER_LIMIT, max_length
 User = get_user_model()
-
-TITLE_LETTER_LIMIT = 30
 
 
 class PublishModel(models.Model):
