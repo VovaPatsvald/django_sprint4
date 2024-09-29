@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils import timezone as dt
 from blog.constants import TITLE_LETTER_LIMIT
 User = get_user_model()
+max_length = 256
 
 
 class PublishModel(models.Model):
