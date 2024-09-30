@@ -34,8 +34,8 @@ def post_select_realted():
     )
 
 
-def count_comments(request):
-    return request.annotate(
+def count_comments(sort_cmt):
+    return sort_cmt.annotate(
         comment_count=Count('comments')
     ).order_by('-pub_date')
 
@@ -142,14 +142,14 @@ def edit_profile(request):
     return render(request, 'blog/user.html', context)
 
 
-def get_posts(post_id):
+def get_post(post_id):
     return get_object_or_404(Post, id=post_id)
 
 
 @login_required
 def edit_post(request, post_id):
     """Страница редактирования публикации"""
-    post = get_posts(post_id)
+    post = get_post(post_id)
     if request.user != post.author:
         return redirect('blog:post_detail', post_id)
     form = PostForm(
@@ -169,7 +169,7 @@ def edit_post(request, post_id):
 @login_required
 def delete_post(request, post_id):
     """Страница удаления публикации"""
-    post = get_posts(post_id)
+    post = get_post(post_id)
     if request.user != post.author:
         return redirect('blog:post_detail', post_id)
     form = PostForm(instance=post)
@@ -185,7 +185,7 @@ def delete_post(request, post_id):
 @login_required
 def add_comment(request, post_id):
     """Добавление комментария"""
-    post = get_posts(post_id)
+    post = get_post(post_id)
     form = CommentForm(request.POST)
     if form.is_valid():
         comment = form.save(commit=False)
