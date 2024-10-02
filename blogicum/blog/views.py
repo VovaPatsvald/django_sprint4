@@ -34,8 +34,8 @@ def post_select_realted():
     )
 
 
-def count_comments(sort_cmt):
-    return sort_cmt.annotate(
+def count_comments(queryset):
+    return queryset.annotate(
         comment_count=Count('comments')
     ).order_by('-pub_date')
 
