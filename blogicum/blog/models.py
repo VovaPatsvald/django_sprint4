@@ -1,10 +1,10 @@
-from blog.constants import TITLE_LETTER_LIMIT
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone as dt
+from blog.constants import TITLE_LETTER_LIMIT, MAX_LENGTH
+
 User = get_user_model()
-MAX_LENGTH = 256
 
 
 class PublishModel(models.Model):
@@ -27,7 +27,7 @@ class PublishModel(models.Model):
 class Category(PublishModel):
     """Модель с категориями"""
 
-    title = models.CharField(max_length=256, verbose_name='Заголовок')
+    title = models.CharField(max_length=MAX_LENGTH, verbose_name='Заголовок')
     description = models.TextField('Описание')
     slug = models.SlugField(
         unique=True,
@@ -49,7 +49,8 @@ class Category(PublishModel):
 class Location(PublishModel):
     """Модель с местоположениями"""
 
-    name = models.CharField(max_length=256, verbose_name='Название места')
+    name = models.CharField(max_length=MAX_LENGTH,
+                            verbose_name='Название места')
 
     class Meta:
         verbose_name = 'местоположение'
@@ -62,7 +63,7 @@ class Location(PublishModel):
 class Post(PublishModel):
     """Модель с постами"""
 
-    title = models.CharField(max_length=256, verbose_name='Заголовок')
+    title = models.CharField(max_length=MAX_LENGTH, verbose_name='Заголовок')
     text = models.TextField('Текст')
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
