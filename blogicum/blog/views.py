@@ -1,12 +1,13 @@
-from blog.models import Category, Comment, Post, User
-from blog.forms import CommentForm, EditProfileForm, PostForm
-from blog.constants import LIMIT_FOR_PAGES
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.db.models.aggregates import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone as dt
+
+from blog.constants import LIMIT_FOR_PAGES
+from blog.forms import CommentForm, EditProfileForm, PostForm
+from blog.models import Category, Comment, Post, User
 
 
 def paginate_posts(request, posts, limit):
@@ -79,7 +80,7 @@ def category_posts(request, category_slug):
         Category,
         is_published=True, slug=category_slug
     )
-    posts = select_posts().filter(category__slug=category_slug)
+    posts = select_posts().filter(category__slug=category)
     page_obj = paginate_posts(request, posts, LIMIT_FOR_PAGES)
     context = {
         'category': category,
