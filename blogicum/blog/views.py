@@ -80,7 +80,7 @@ def category_posts(request, category_slug):
         Category,
         is_published=True, slug=category_slug
     )
-    posts = select_posts().filter(category__slug=category)
+    posts = select_posts().filter(category=category)
     page_obj = paginate_posts(request, posts, LIMIT_FOR_PAGES)
     context = {
         'category': category,
